@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>◾ Let's write) ◾</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <script src="java_script.js"></script>
+</head>
+<body>
+
+<p></p>
+
+<style>
+  .hidden {
+    display:none;
+  }
+</style>
+
+<form id="mars-once" action="/apply/" method="POST">
+  <label>
+    Ваше имя:
+    <input type="text" name="name" id="name" placeholder="Илон Маск" required autofocus>
+  </label>
+
+  <label>
+    Почта:
+    <input type="email" name="email" id="email" placeholder="elon@musk.com" required>
+  </label>
+
+  <label>
+    Возраст:
+    <input type="number" name="age" required>
+  </label>
+
+  <label>
+    Профессия:
+    <select name="specialization" required>
+      <option value="engineer" selected>Инженер</option>
+      <option value="scientist">Учёный</option>
+      <option value="psychologist">Психолог</option>
+      <option value="other">Другая</option>
+    </select>
+  </label>
+
+  <label>
+    Я работал в NASA
+    <input type="checkbox" name="nasa-experience" value="1">
+  </label>
+
+  <label>
+    Фото:
+    <input type="file" accept="image/jpeg" name="photo" required>
+  </label>
+
+  <button type="submit">Отправить заявку</button>
+  <div id="loader" class="hidden">Отправляем...</div>
+</form>
+
+
+<script>
+    // var postik = prompt ("Тема: ");
+    // document.write("<p>", postik, "</p>");
+
+    function handleFormSubmit(event) {
+        // Просим форму не отправлять данные самостоятельно
+        event.preventDefault()
+        console.log('Отправка!')
+    }
+
+    const applicantForm = document.getElementById('mars-once')
+    applicantForm.addEventListener('submit', handleFormSubmit)
+
+    function serializeForm(formNode) {
+      const { elements } = formNode
+
+      const data = new FormData()
+
+      Array.from(elements)
+        .filter((item) => !!item.name)
+        .forEach((element) => {
+          const { name, type } = element
+          const value = type === 'checkbox' ? element.checked : element.value
+
+          data.append(name, value)
+        })
+
+      return data
+    }
+
+    console.log(Array.from(data.entries()))
+
+    function handleFormSubmit(event) {
+      event.preventDefault()
+      serializeForm(applicantForm)
+    }
+
+    const applicantForm = document.getElementById('mars-once')
+    applicantForm.addEventListener('submit', handleFormSubmit)
+
+    async function sendData(data) {
+      return await fetch('/api/apply/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'multipart/form-data' },
+        body: data,
+      })
+    }
+
+        function toggleLoader() {
+      const loader = document.getElementById('loader')
+      loader.classList.toggle('hidden')
+    }
+
+    // Вызовем её вот так:
+    async function handleFormSubmit(event) {
+      event.preventDefault()
+      const data = serializeForm(event.target)
+
+      toggleLoader()
+
+      const { status, error } = await sendData(data)
+      toggleLoader()
+
+      if (status === 200) {
+        onSuccess(event.target)
+      } else {
+        onError(error)
+      }
+    }
+
+
+
+    function onSuccess(formNode) {
+      alert('Ваша заявка отправлена!')
+      formNode.classList.toggle('hidden')
+    }
+
+    function onError(error) {
+      alert(error.message)
+    }
+
+    function checkValidity(event) {
+      const formNode = event.target.form
+      const isValid = formNode.checkValidity()
+
+      formNode.querySelector('button').disabled = !isValid
+    }
+
+    applicantForm.addEventListener('input', checkValidity)
+
+
+</script>
+
+</body>
+</html>
